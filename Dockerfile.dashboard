@@ -5,8 +5,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     ENV=production
 
-# Run security patches and updates
+# Run security patches and install required system libraries (like libgomp1 for LightGBM/XGBoost)
 RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends libgomp1 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
