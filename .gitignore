@@ -104,7 +104,6 @@ data/*.db
 
 # Large Datasets (to prevent hitting GitHub size limits)
 data/ready_cleaned.csv
-data/ready_cleaned_v2.csv
 
 # Temporary model files (optional, but good to keep tracked if required for direct deploy)
 # models/*.pkl
