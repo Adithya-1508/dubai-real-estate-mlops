@@ -15,7 +15,7 @@ load_dotenv()
 
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
-warnings.filterwarnings("ignore", category=UserWarning, module="pandas")
+warnings.filterwarnings("ignore", category=UserWarning)
 
 
 sys.path.append(".")
@@ -153,7 +153,7 @@ def get_recommendations(user_input, df, top_n=3):
     
     # Sort and return top N
     recs = df_dist.sort_values("distance").head(top_n)
-    return recs[["price", "beds", "baths", "area", "furnished", "luxury_score", "has_view", "has_maids_room", "is_freehold", "property_name"]]
+    return recs[["price", "beds", "baths", "area", "furnished", "luxury_score", "has_view", "has_maids_room", "is_freehold", "property_name", "district"]]
 
 # Query parsing helper for LLM Assistant tab
 def parse_query(q, df):
