@@ -22,7 +22,7 @@ sys.path.append(".")
 import pydeck as pdk
 from models.geospatial import DISTRICT_COORDINATES
 
-API_URL = "http://127.0.0.1:8000"
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 
 def get_jwt_token():
     """Fetches a JWT token from the FastAPI auth endpoint and stores it in session state."""
@@ -635,11 +635,12 @@ with tab5:
     def get_db_connection():
         if database_url:
             import psycopg2
-            return psycopg2.connect(database_url)
+            return psycopg2.connect(database_url, connect_timeout=3)
         else:
             import sqlite3
-            return sqlite3.connect(db_path)
+            return sqlite3.connect(db_path, timeout=3.0)
         
+    @st.cache_data(ttl=60)
     def load_logs():
         if not database_url and not os.path.exists(db_path):
             return pd.DataFrame()
@@ -649,13 +650,15 @@ with tab5:
             conn.close()
             return df_l
         except Exception as e:
-            st.error(f"Error loading logs: {e}")
+            # Silently fail here to prevent blocking UI loading; user is notified in the UI.
             return pd.DataFrame()
 
     df_logs = load_logs()
     
     if df_logs.empty:
         st.info("No prediction logs found in database. Once predictions are run through the API or Predictor tab, telemetry will appear here.")
+        if database_url:
+            st.warning("⚠️ Note: A external DATABASE_URL is configured, but the dashboard was unable to connect. Please ensure your database accepts public incoming traffic and that the connection credentials are correct (connection timeout is 3s).")
         
         # Option to log sample mock data for demonstration purposes
         if st.button("Generate Telemetry Mock Data"):
